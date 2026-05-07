@@ -44,9 +44,15 @@ while true; do
         
         2)
             echo "--- Verificando cambios en $(pwd) ---"
+            # Capturamos el estado
             CAMBIOS=$(git status --porcelain)
+
             if [ -z "$CAMBIOS" ]; then
-                echo "ℹ️ No hay cambios pendientes."
+                # Ahora usamos un mensaje más visible y una pausa
+                echo "--------------------------------------"
+                echo "ℹ️  Todo al día. No hay cambios pendientes."
+                echo "--------------------------------------"
+                sleep 1 # Pausa de un segundo para que alcances a leerlo
             else
                 echo "Cambios detectados:"
                 git status -s
@@ -56,7 +62,7 @@ while true; do
                 git commit -m "$MSG"
                 RAMA=$(git branch --show-current)
                 git push origin "$RAMA"
-                echo "✅ ¡Actualizado en rama $RAMA!"
+                echo "✅ ¡Actualizado con éxito!"
             fi
             ;;
 
