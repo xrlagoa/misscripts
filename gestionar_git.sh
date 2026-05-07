@@ -1,8 +1,12 @@
 #!/bin/bash
 # Desc: Gestor avanzado multi-VM: Trazabilidad, Sincronización selectiva y Clonado.
+# Desc: Gestor Multi-VM con Flujo PRO/DEV (GitFlow Simplificado)
+# Desc: Gestor Pro de Repositorios - Flujo Master/Develop/Features
+# Version: 5.5
 
 MI_VM=$(hostname)
 
+# --- FUNCIÓN: Generar Tabla de Contenidos ---
 actualizar_readme_tabla() {
     echo -e "# Índice Global de Scripts\n" > README.md
     echo -e "Generado automáticamente desde: **$MI_VM**\n" >> README.md
@@ -15,102 +19,125 @@ actualizar_readme_tabla() {
 }
 
 while true; do
-    echo "======================================"
+    RAMA_ACTUAL=$(git branch --show-current 2>/dev/null)
+    echo "=========================================================="
     echo "   SISTEMA DE GESTIÓN (Host: $MI_VM)"
-    echo "======================================"
-    echo "Directorio actual: $(pwd)"
-    echo "--------------------------------------"
-    echo "1. Crear/Inicializar proyecto local"
-    echo "2. SUBIR Cambios (Push)"
-    echo "3. BAJAR Cambios (Pull)"
-    echo "4. TRAER Proyecto de GitHub (Clone)"
-    echo "5. Actualizar Tabla de Scripts / README"
-    echo "6. Cambiar de directorio (CD)"
-    echo "7. REPARAR Conexión con GitHub (Rescate)"
-    echo "X. Salir"    
+    echo "   PROYECTO: $(basename "$(pwd)") | RAMA: [${RAMA_ACTUAL:-No Git}]"
+    echo "=========================================================="
+    echo " 1. [NUEVO] Crear proyecto desde cero (Master + Develop)"
+    echo " 2. [ACTUALIZAR] Convertir proyecto existente (Añadir Develop)"
+    echo "----------------------------------------------------------"
+    echo " 3. SUBIR Cambios a rama actual ($RAMA_ACTUAL)"
+    echo " 4. BAJAR Cambios (Sync rápido desde Master)"
+    echo " 5. TRAER / Clonar proyecto de GitHub"
+    echo "----------------------------------------------------------"
+    echo " 6. Cambiar entre ramas (Master / Develop / Otros)"
+    echo " 7. Crear rama de EXPERIMENTO / COLABORADOR"
+    echo " 8. 🚀 PROMOVER: Fusionar Develop -> Master (PASO A PRO)"
+    echo "----------------------------------------------------------"
+    echo " 9. Actualizar Tabla README | 10. Cambiar de Directorio (CD)"
+    echo " R. REPARAR Conexión GitHub | X. Salir"    
     read -p "Opción: " opcion
 
     case $opcion in
         1)
-            ACTUAL=$(pwd)
-            read -p "Ruta [$ACTUAL]: " RUTA
-            cd "${RUTA:-$ACTUAL}" || exit
             read -p "Nombre repo: " NOMBRE
-            read -p "Desc. Larga: " DESC_REPO
-            # Crear archivo inicial si está vacío
-            [ -z "$(ls -A)" ] && echo "# $NOMBRE" > README.md
+            read -p "Desc: " DESC
             git init
+            echo "# $NOMBRE" > README.md
             git add .
-            git commit -m "Carga inicial [$MI_VM]: $NOMBRE"
-            # Creamos el repo y FORZAMOS la conexión del remoto
-            gh repo create "xrlagoa/$NOMBRE" --public --description "$DESC_REPO" --source=. --remote=origin --push
+            git commit -m "Carga inicial [$MI_VM]"
+            git branch -M master
+            gh repo create "xrlagoa/$NOMBRE" --public --description "$DESC" --source=. --remote=origin --push
+            git checkout -b develop
+            git push -u origin develop
+            echo "✅ Proyecto configurado con Master (Público) y Develop."
             ;;
 
         2)
-            CAMBIOS=$(git status --porcelain)
-            if [ -z "$CAMBIOS" ]; then
-                echo "ℹ️  Sin cambios pendientes en $MI_VM."
-                sleep 1
-            else
-                git status -s
-                read -p "Mensaje de actualización: " MSG
-                git add .
-                git commit -m "[$MI_VM] $MSG"
-                RAMA=$(git branch --show-current)
-                git push origin "$RAMA"
-                echo "✅ Actualizado en rama $RAMA desde $MI_VM."
+            echo "--- Configurando entorno Develop en proyecto actual ---"
+            if [ "$RAMA_ACTUAL" == "main" ]; then
+                git branch -m main master
+                echo "Renombrada 'main' a 'master'."
             fi
+            git checkout master && git pull origin master
+            git checkout -b develop
+            git push -u origin develop
+            echo "✅ Ahora el proyecto tiene rama 'develop'."
             ;;
 
         3)
-            echo "--- Sincronizando con GitHub ---"
-            git fetch origin
-            RAMA=$(git branch --show-current)
-            DIFERENCIAS=$(git rev-list HEAD..origin/"$RAMA" --count)
-            if [ "$DIFERENCIAS" -eq 0 ]; then
-                echo "ℹ️  Todo al día."
-            else
-                echo "⚠️  Hay $DIFERENCIAS cambios en GitHub."
-                echo "a) Descargar TODO (Sync)"
-                echo "b) Elegir archivos específicos (Manual)"
-                read -p "Seleccione modo: " MODO
-                if [ "$MODO" = "a" ]; then
-                    git pull origin "$RAMA"
-                elif [ "$MODO" = "b" ]; then
-                    git diff --name-only HEAD origin/"$RAMA"
-                    read -p "Archivo a actualizar (o 'fin'): " FILE
-                    while [ "$FILE" != "fin" ]; do
-                        git checkout origin/"$RAMA" -- "$FILE"
-                        read -p "Siguiente (o 'fin'): " FILE
-                    done
-                fi
+            if [ "$RAMA_ACTUAL" == "master" ]; then
+                echo "⚠️  ADVERTENCIA: Estás en MASTER (Producción)."
+                read -p "¿Estás seguro de subir cambios directos? (s/n): " CONF
+                [ "$CONF" != "s" ] && continue
             fi
+            git status -s
+            read -p "Mensaje de actualización: " MSG
+            git add .
+            git commit -m "[$MI_VM] $MSG"
+            git push origin "$RAMA_ACTUAL"
             ;;
 
         4)
+            echo "--- Sincronizando con Master ---"
+            git fetch origin
+            git checkout master
+            git pull origin master
+            git checkout "$RAMA_ACTUAL"
+            echo "✅ Base de código actualizada."
+            ;;
+
+        5)
             read -p "Nombre del repo en GitHub: " REPO_NOM
             read -p "Ruta destino: " RUTA_DEST
-            mkdir -p "$RUTA_DEST"
-            cd "$RUTA_DEST" || exit
+            mkdir -p "$RUTA_DEST" && cd "$RUTA_DEST" || exit
             gh repo clone "xrlagoa/$REPO_NOM" .
-            # Nos movemos a develop por defecto para trabajar
-            git checkout develop || git checkout -b develop
+            git checkout develop || git checkout master
             ;;
 
-        5) actualizar_readme_tabla && echo "✅ Tabla generada." ;;
-        6) read -p "Ruta: " NR && cd "$NR" && echo "Cambiado a: $(pwd)" ;;
+        6)
+            echo "Ramas disponibles:"
+            git branch
+            read -p "Ir a la rama: " DEST
+            git checkout "$DEST"
+            ;;
 
         7)
-            echo "--- Reparando Conexión Remota ---"
-            read -p "Nombre del repositorio en GitHub: " REPO_NOM
-            # Eliminamos cualquier rastro de 'origin' mal configurado
-            git remote remove origin 2>/dev/null
-            # Reconectamos usando SSH (que es lo que configuramos)
-            git remote add origin "git@github.com:xrlagoa/$REPO_NOM.git"
-            echo "✅ Remoto 'origin' reconectado a xrlagoa/$REPO_NOM"
-            git push -u origin $(git branch --show-current)
+            echo "--- Creando rama de Feature/Experimento ---"
+            read -p "Nombre de la rama (ej: feat-nueva-idea): " NUEVA
+            git checkout develop
+            git checkout -b "$NUEVA"
+            git push -u origin "$NUEVA"
+            echo "✅ Rama [$NUEVA] lista para trabajar sin romper Develop."
             ;;
 
-        X) exit 0 ;;
+        8)
+            echo "--- 🚀 INICIANDO PASO A PRODUCCIÓN (Merge a Master) ---"
+            git checkout master
+            git pull origin master
+            echo "Mezclando cambios de la rama Develop..."
+            git merge develop
+            if [ $? -eq 0 ]; then
+                git push origin master
+                echo "✅ PRODUCCIÓN ACTUALIZADA CORRECTAMENTE."
+            else
+                echo "❌ Error: Hay conflictos que debes resolver manualmente."
+            fi
+            git checkout develop
+            ;;
+
+        9) actualizar_readme_tabla && echo "✅ README actualizado." ;;
+        10) read -p "Ruta: " NR && cd "$NR" && echo "Directorio: $(pwd)" ;;
+
+        R)
+            read -p "Nombre del repo: " REPO_NOM
+            git remote remove origin 2>/dev/null
+            git remote add origin "git@github.com:xrlagoa/$REPO_NOM.git"
+            echo "✅ Remoto reparado."
+            ;;
+
+        X|x) exit 0 ;;
+        *) echo "Opción no válida." ;;
     esac
 done
