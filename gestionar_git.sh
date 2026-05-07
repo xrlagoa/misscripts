@@ -30,15 +30,27 @@ while true; do
 
     case $opcion in
         1)
-            read -p "Confirmar ruta raíz [/home/custuser/misscripts]: " RUTA
-            RUTA=${RUTA:-$(pwd)}
+            # Sugerimos la carpeta actual dinámicamente
+            ACTUAL=$(pwd)
+            read -p "Confirmar ruta raíz [$ACTUAL]: " RUTA
+            RUTA=${RUTA:-$ACTUAL}
             cd "$RUTA" || exit
+            
             read -p "Nombre corto del repo: " NOMBRE
             read -p "Descripción corta (Commit): " DESC_COMMIT
             read -p "Descripción larga (GitHub): " DESC_REPO
+
+            # PASO CLAVE: Si la carpeta está vacía, creamos un archivo inicial
+            if [ -z "$(ls -A)" ]; then
+                echo "# $NOMBRE" > README.md
+                echo "Iniciando repositorio vacío con README.md"
+            fi
+
             git init
             git add .
             git commit -m "Carga inicial: $DESC_COMMIT"
+            
+            # Creamos el repo en GitHub
             gh repo create "$NOMBRE" --public --description "$DESC_REPO" --source=. --remote=origin --push
             ;;
         
