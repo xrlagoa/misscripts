@@ -1,7 +1,6 @@
 #!/bin/bash
-# Desc: Gestor multi-VM con trazabilidad de hostname y sincronización bidireccional.
+# Desc: Gestor avanzado multi-VM: Trazabilidad, Sincronización selectiva y Clonado.
 
-# Variable para identificar la máquina actual
 MI_VM=$(hostname)
 
 actualizar_readme_tabla() {
@@ -11,23 +10,22 @@ actualizar_readme_tabla() {
     echo -e "| :--- | :--- | :--- |" >> README.md
     for f in *.sh; do
         desc=$(grep -m 1 "^# Desc:" "$f" | sed 's/# Desc: //')
-        # Intentamos buscar si el script tiene una marca de para qué VM es
         echo "| \`$f\` | ${desc:-Sin descripción} | $MI_VM |" >> README.md
     done
 }
 
 while true; do
     echo "======================================"
-    echo "   GESTOR MULTI-VM (Host: $MI_VM)"
+    echo "   SISTEMA DE GESTIÓN (Host: $MI_VM)"
     echo "======================================"
-    echo "Directorio: $(pwd)"
+    echo "Directorio actual: $(pwd)"
     echo "--------------------------------------"
-    echo "1. Crear/Inicializar proyecto"
-    echo "2. SUBIR Cambios (Push) - De VM a GitHub"
-    echo "3. BAJAR Cambios (Pull) - De GitHub a VM"
-    echo "4. Actualizar Tabla de Scripts"
-    echo "5. Cambiar Descripción en GitHub"
-    echo "6. Cambiar de directorio"
+    echo "1. Crear/Inicializar proyecto local"
+    echo "2. SUBIR Cambios (Push a Develop)"
+    echo "3. BAJAR Cambios (Pull/Sincronizar)"
+    echo "4. TRAER Proyecto de GitHub (Clone)"
+    echo "5. Actualizar Tabla de Scripts / README"
+    echo "6. Cambiar de directorio (CD)"
     echo "7. Salir"
     read -p "Opción: " opcion
 
@@ -37,27 +35,30 @@ while true; do
             read -p "Ruta [$ACTUAL]: " RUTA
             cd "${RUTA:-$ACTUAL}" || exit
             read -p "Nombre repo: " NOMBRE
-            read -p "Desc. Larga: " DESC_REPO
+            read -p "Desc. Larga GitHub: " DESC_REPO
             [ -z "$(ls -A)" ] && echo "# $NOMBRE" > README.md
             git init
             git add .
             git commit -m "Carga inicial [$MI_VM]: $NOMBRE"
             gh repo create "$NOMBRE" --public --description "$DESC_REPO" --source=. --remote=origin --push
+            # Crear rama develop inmediatamente
+            git checkout -b develop
+            git push -u origin develop
             ;;
         
         2)
-            if [ -z "$(git status --porcelain)" ]; then
+            CAMBIOS=$(git status --porcelain)
+            if [ -z "$CAMBIOS" ]; then
                 echo "ℹ️  Sin cambios pendientes en $MI_VM."
                 sleep 1
             else
                 git status -s
                 read -p "Mensaje de actualización: " MSG
                 git add .
-                # Incluimos el hostname automáticamente en el mensaje
                 git commit -m "[$MI_VM] $MSG"
                 RAMA=$(git branch --show-current)
                 git push origin "$RAMA"
-                echo "✅ Actualizado en GitHub desde $MI_VM."
+                echo "✅ Actualizado en rama $RAMA desde $MI_VM."
             fi
             ;;
 
@@ -67,16 +68,36 @@ while true; do
             RAMA=$(git branch --show-current)
             DIFERENCIAS=$(git rev-list HEAD..origin/"$RAMA" --count)
             if [ "$DIFERENCIAS" -eq 0 ]; then
-                echo "ℹ️  Esta VM ya tiene la última versión."
+                echo "ℹ️  Todo al día."
             else
-                echo "⚠️  Hay $DIFERENCIAS cambios nuevos en GitHub (hechos en otros sitios)."
-                read -p "¿Descargar ahora? (s/n): " RESP
-                [ "$RESP" = "s" ] && git pull origin "$RAMA" && echo "✅ VM actualizada."
+                echo "⚠️  Hay $DIFERENCIAS cambios en GitHub."
+                echo "a) Descargar TODO (Sync)"
+                echo "b) Elegir archivos específicos (Manual)"
+                read -p "Seleccione modo: " MODO
+                if [ "$MODO" = "a" ]; then
+                    git pull origin "$RAMA"
+                elif [ "$MODO" = "b" ]; then
+                    git diff --name-only HEAD origin/"$RAMA"
+                    read -p "Archivo a actualizar (o 'fin'): " FILE
+                    while [ "$FILE" != "fin" ]; do
+                        git checkout origin/"$RAMA" -- "$FILE"
+                        read -p "Siguiente (o 'fin'): " FILE
+                    done
+                fi
             fi
             ;;
 
-        4) actualizar_readme_tabla && echo "✅ Tabla generada." ;;
-        5) read -p "Nueva desc: " ND && gh repo edit --description "$ND" ;;
+        4)
+            read -p "Nombre del repo en GitHub: " REPO_NOM
+            read -p "Ruta destino: " RUTA_DEST
+            mkdir -p "$RUTA_DEST"
+            cd "$RUTA_DEST" || exit
+            gh repo clone "xrlagoa/$REPO_NOM" .
+            # Nos movemos a develop por defecto para trabajar
+            git checkout develop || git checkout -b develop
+            ;;
+
+        5) actualizar_readme_tabla && echo "✅ Tabla generada." ;;
         6) read -p "Ruta: " NR && cd "$NR" && echo "Cambiado a: $(pwd)" ;;
         7) exit 0 ;;
     esac
