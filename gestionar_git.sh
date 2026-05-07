@@ -21,12 +21,13 @@ while true; do
     echo "Directorio actual: $(pwd)"
     echo "--------------------------------------"
     echo "1. Crear/Inicializar proyecto local"
-    echo "2. SUBIR Cambios (Push a Develop)"
-    echo "3. BAJAR Cambios (Pull/Sincronizar)"
+    echo "2. SUBIR Cambios (Push)"
+    echo "3. BAJAR Cambios (Pull)"
     echo "4. TRAER Proyecto de GitHub (Clone)"
     echo "5. Actualizar Tabla de Scripts / README"
     echo "6. Cambiar de directorio (CD)"
-    echo "7. Salir"
+    echo "7. REPARAR Conexión con GitHub (Rescate)"
+    echo "X. Salir"    
     read -p "Opción: " opcion
 
     case $opcion in
@@ -35,17 +36,16 @@ while true; do
             read -p "Ruta [$ACTUAL]: " RUTA
             cd "${RUTA:-$ACTUAL}" || exit
             read -p "Nombre repo: " NOMBRE
-            read -p "Desc. Larga GitHub: " DESC_REPO
+            read -p "Desc. Larga: " DESC_REPO
+            # Crear archivo inicial si está vacío
             [ -z "$(ls -A)" ] && echo "# $NOMBRE" > README.md
             git init
             git add .
             git commit -m "Carga inicial [$MI_VM]: $NOMBRE"
-            gh repo create "$NOMBRE" --public --description "$DESC_REPO" --source=. --remote=origin --push
-            # Crear rama develop inmediatamente
-            git checkout -b develop
-            git push -u origin develop
+            # Creamos el repo y FORZAMOS la conexión del remoto
+            gh repo create "xrlagoa/$NOMBRE" --public --description "$DESC_REPO" --source=. --remote=origin --push
             ;;
-        
+
         2)
             CAMBIOS=$(git status --porcelain)
             if [ -z "$CAMBIOS" ]; then
@@ -99,6 +99,18 @@ while true; do
 
         5) actualizar_readme_tabla && echo "✅ Tabla generada." ;;
         6) read -p "Ruta: " NR && cd "$NR" && echo "Cambiado a: $(pwd)" ;;
-        7) exit 0 ;;
+
+        7)
+            echo "--- Reparando Conexión Remota ---"
+            read -p "Nombre del repositorio en GitHub: " REPO_NOM
+            # Eliminamos cualquier rastro de 'origin' mal configurado
+            git remote remove origin 2>/dev/null
+            # Reconectamos usando SSH (que es lo que configuramos)
+            git remote add origin "git@github.com:xrlagoa/$REPO_NOM.git"
+            echo "✅ Remoto 'origin' reconectado a xrlagoa/$REPO_NOM"
+            git push -u origin $(git branch --show-current)
+            ;;
+
+        X) exit 0 ;;
     esac
 done
