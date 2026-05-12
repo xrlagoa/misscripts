@@ -1,0 +1,59 @@
+2026/05/12 10:05:19 INFO  : There was nothing to transfer
+2026/05/12 10:05:19 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 3 / 3, 100%, Listed 6
+Elapsed time:         1.5s
+
+2026/05/12 10:05:22 INFO  : .git/objects: Set directory modification time (using SetModTime)
+2026/05/12 10:05:22 INFO  : .git/FETCH_HEAD: Updated modification time in destination
+2026/05/12 10:05:22 INFO  : temporal.sh: Copied (new)
+2026/05/12 10:05:23 ERROR : logs/backup_20260512.log: Failed to copy: Put "https://hotelesturisticosunidos-my.sharepoint.com/personal/joseramon_lopez_igmweb_com/_api/v2.0/drives/b!wcYuah2J6EOGhRXK_DFCHV2wVOy6t0hDvjC17k8-xbJAAy2eWLYFS64JA0kM8rQm/items/01DAM3PSW6SJ5AFCNXYNFLE3KRUE57RGHJ/uploadSession?guid='209d829e-79e2-4409-af52-06c92fbb0369'&overwrite=True&rename=False&dc=0&tempauth=v1.eyJzaXRlaWQiOiI2YTJlYzZjMS04OTFkLTQzZTgtODY4NS0xNWNhZmMzMTQyMWQiLCJhcHBfZGlzcGxheW5hbWUiOiJyY2xvbmUiLCJhcHBpZCI6ImIxNTY2NWQ5LWVkYTYtNDA5Mi04NTM5LTBlZWMzNzZhZmQ1OSIsImF1ZCI6IjAwMDAwMDAzLTAwMDAtMGZmMS1jZTAwLTAwMDAwMDAwMDAwMC9ob3RlbGVzdHVyaXN0aWNvc3VuaWRvcy1teS5zaGFyZXBvaW50LmNvbUA4YjM1OTUyNi0xN2M3LTQ2MDQtODlmMi1jODU4MDRkNmE4OGYiLCJleHAiOiIxNzc4NjU5NTIyIn0.CkAKDGVudHJhX2NsYWltcxIwQ0pDOGk5QUdFQUFhRmxoS2NXd3RRalV3YUVWTFRXVTJjVmhqWDJSaFFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NhILCMqp8_vngZg_EAUaDTQwLjEyNi40OS4xNTIqLEpNbytlTVkwZGtNclV0eHV3Z3FVV2NrUVNxVG8yU3gyaExaay81Z05OQzg9MK0COAFCEKIS1k8hkACQJp3c312nbS9KEGhhc2hlZHByb29mdG9rZW5SCFsia21zaSJdaiQwMGE5ZGM3OS05YzY0LTg5MjktZjEyNS04M2FkYWNhNjBjMDJyKTBoLmZ8bWVtYmVyc2hpcHwxMDAzMjAwNTUxZDkwOTNkQGxpdmUuY29tegEyggESCSaVNYvHFwRGEYnyyFgE1qiPkgEBZZoBBUxvcGV6ogEaam9zZXJhbW9uLmxvcGV6QGlnbXdlYi5jb22qARAxMDAzMjAwNTUxRDkwOTNEsgFFbXlmaWxlcy5yZWFkIGFsbGZpbGVzLnJlYWQgbXlmaWxlcy53cml0ZSBhbGxmaWxlcy53cml0ZSBhbGxzaXRlcy5yZWFkyAEB.Zi0TPiNK3dWqFVDChQG_VXCOP8Octk2fBMgOJEbkPAA": can't copy - source file is being updated (size changed from 214 to 447)
+2026/05/12 10:05:23 INFO  : auxiliar.sh: Copied (new)
+2026/05/12 10:05:24 INFO  : backup_to_onedrive.sh: Moved (server-side)
+2026/05/12 10:05:24 INFO  : .rutas_especiales: Moved (server-side)
+2026/05/12 10:05:25 INFO  : .rutas_especiales: Copied (new)
+2026/05/12 10:05:25 INFO  : backup_to_onedrive.sh: Copied (new)
+2026/05/12 10:05:25 ERROR : OneDrive root 'Infraestructura_VMs/dcm05/misscripts': not deleting files as there were IO errors
+2026/05/12 10:05:25 INFO  : logs: Set directory modification time (using DirSetModTime)
+2026/05/12 10:05:25 ERROR : OneDrive root 'Infraestructura_VMs/dcm05/misscripts': not deleting directories as there were IO errors
+2026/05/12 10:05:25 ERROR : Attempt 1/3 failed with 1 errors and: Put "https://hotelesturisticosunidos-my.sharepoint.com/personal/joseramon_lopez_igmweb_com/_api/v2.0/drives/b!wcYuah2J6EOGhRXK_DFCHV2wVOy6t0hDvjC17k8-xbJAAy2eWLYFS64JA0kM8rQm/items/01DAM3PSW6SJ5AFCNXYNFLE3KRUE57RGHJ/uploadSession?guid='209d829e-79e2-4409-af52-06c92fbb0369'&overwrite=True&rename=False&dc=0&tempauth=v1.eyJzaXRlaWQiOiI2YTJlYzZjMS04OTFkLTQzZTgtODY4NS0xNWNhZmMzMTQyMWQiLCJhcHBfZGlzcGxheW5hbWUiOiJyY2xvbmUiLCJhcHBpZCI6ImIxNTY2NWQ5LWVkYTYtNDA5Mi04NTM5LTBlZWMzNzZhZmQ1OSIsImF1ZCI6IjAwMDAwMDAzLTAwMDAtMGZmMS1jZTAwLTAwMDAwMDAwMDAwMC9ob3RlbGVzdHVyaXN0aWNvc3VuaWRvcy1teS5zaGFyZXBvaW50LmNvbUA4YjM1OTUyNi0xN2M3LTQ2MDQtODlmMi1jODU4MDRkNmE4OGYiLCJleHAiOiIxNzc4NjU5NTIyIn0.CkAKDGVudHJhX2NsYWltcxIwQ0pDOGk5QUdFQUFhRmxoS2NXd3RRalV3YUVWTFRXVTJjVmhqWDJSaFFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NhILCMqp8_vngZg_EAUaDTQwLjEyNi40OS4xNTIqLEpNbytlTVkwZGtNclV0eHV3Z3FVV2NrUVNxVG8yU3gyaExaay81Z05OQzg9MK0COAFCEKIS1k8hkACQJp3c312nbS9KEGhhc2hlZHByb29mdG9rZW5SCFsia21zaSJdaiQwMGE5ZGM3OS05YzY0LTg5MjktZjEyNS04M2FkYWNhNjBjMDJyKTBoLmZ8bWVtYmVyc2hpcHwxMDAzMjAwNTUxZDkwOTNkQGxpdmUuY29tegEyggESCSaVNYvHFwRGEYnyyFgE1qiPkgEBZZoBBUxvcGV6ogEaam9zZXJhbW9uLmxvcGV6QGlnbXdlYi5jb22qARAxMDAzMjAwNTUxRDkwOTNEsgFFbXlmaWxlcy5yZWFkIGFsbGZpbGVzLnJlYWQgbXlmaWxlcy53cml0ZSBhbGxmaWxlcy53cml0ZSBhbGxzaXRlcy5yZWFkyAEB.Zi0TPiNK3dWqFVDChQG_VXCOP8Octk2fBMgOJEbkPAA": can't copy - source file is being updated (size changed from 214 to 447)
+2026/05/12 10:05:26 INFO  : logs/backup_20260512.log: Copied (new)
+2026/05/12 10:05:27 INFO  : logs: Set directory modification time (using SetModTime)
+2026/05/12 10:05:27 ERROR : Attempt 2/3 succeeded
+2026/05/12 10:05:27 INFO  : 
+Transferred:   	    9.989 KiB / 9.989 KiB, 100%, 1.664 KiB/s, ETA 0s
+Checks:               222 / 222, 100%, Listed 723
+Renamed:                2
+Transferred:            5 / 5, 100%
+Server Side Moves:      2 @ 2.055 KiB
+Elapsed time:         7.4s
+
+2026/05/12 10:05:31 INFO  : .git/objects: Set directory modification time (using SetModTime)
+2026/05/12 10:05:31 INFO  : .git/FETCH_HEAD: Updated modification time in destination
+2026/05/12 10:05:32 INFO  : There was nothing to transfer
+2026/05/12 10:05:32 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                39 / 39, 100%, Listed 120
+Elapsed time:         3.8s
+
+2026/05/12 10:05:35 INFO  : state: Set directory modification time (using SetModTime)
+2026/05/12 10:05:36 INFO  : .git/FETCH_HEAD: Updated modification time in destination
+2026/05/12 10:05:36 INFO  : .git/objects: Set directory modification time (using SetModTime)
+2026/05/12 10:05:36 INFO  : .rclone_ignore: Copied (new)
+2026/05/12 10:06:33 INFO  : 
+Transferred:   	        258 B / 258 B, 100%, 86 B/s, ETA 0s
+Checks:                60 / 60, 100%, Listed 15223
+Transferred:            1 / 1, 100%
+Elapsed time:       1m0.0s
+
+2026/05/12 10:06:59 INFO  : state/last_seq.state: Moved (server-side)
+2026/05/12 10:07:01 INFO  : state/last_seq.state: Copied (new)
+2026/05/12 10:07:01 INFO  : state: Set directory modification time (using SetModTime)
+2026/05/12 10:07:01 INFO  : 
+Transferred:   	        264 B / 264 B, 100%, 66 B/s, ETA 0s
+Checks:                64 / 64, 100%, Listed 22214
+Renamed:                1
+Transferred:            2 / 2, 100%
+Server Side Moves:      1 @ 6 B
+Elapsed time:      1m28.3s
+
